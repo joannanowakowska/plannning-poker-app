@@ -36,6 +36,16 @@ input {
   font: inherit;
 }
 
+button {
+  min-height: 48px;
+  padding: var(--space-dwarf) var(--space-man);
+  border: 2px solid var(--color-text-primary);
+  border-radius: 4px;
+  color: var(--color-parchment);
+  background: var(--color-text-primary);
+  cursor: pointer;
+}
+
 input:focus {
   outline: 3px solid var(--color-gold-focus);
   outline-offset: 2px;
@@ -88,7 +98,7 @@ h1 {
 
 .room-details {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: var(--space-man);
   margin: var(--space-ent) 0;
 }
@@ -119,7 +129,18 @@ dd {
   font-weight: 700;
 }
 
-#invite-link {
+.join-form {
+  display: grid;
+  gap: var(--space-dwarf);
+  margin-top: var(--space-ent);
+}
+
+.join-form label {
+  font-weight: 700;
+}
+
+#invite-link,
+#display-name {
   width: 100%;
   min-height: 48px;
   padding: var(--space-dwarf) var(--space-man);
@@ -127,6 +148,46 @@ dd {
   border-radius: 4px;
   color: var(--color-text-primary);
   background: var(--color-parchment);
+}
+
+.form-error {
+  margin: var(--space-hobbit) 0 0;
+  color: var(--color-red);
+  font-weight: 700;
+}
+
+.participants {
+  margin: 0 0 var(--space-ent);
+}
+
+.participants h2 {
+  margin: 0 0 var(--space-man);
+  font-family: 'IM Fell English', serif;
+  font-size: 2rem;
+  font-weight: 400;
+}
+
+.participants ul {
+  display: grid;
+  gap: var(--space-dwarf);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.participants li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-man);
+  padding: var(--space-man);
+  border-left: 4px solid var(--color-green);
+  background: rgb(250 246 237 / 64%);
+}
+
+.participants small,
+.empty-state {
+  color: var(--color-text-secondary);
 }
 
 @media (max-width: 640px) {

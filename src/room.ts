@@ -1,6 +1,25 @@
 export const BACKEND_WS_URL = 'wss://planning-poker-backend-ymq7.onrender.com/ws';
 export const DEFAULT_DISPLAY_NAME = 'Fellowship Host';
+export const DISPLAY_NAME_MAX_LENGTH = 32;
 export const ROOM_ID_PATTERN = /^[a-z0-9]{4,32}(-[a-z0-9]{4,32})*$/;
+
+export type RoomUser = {
+  id: string;
+  name: string;
+  hasVoted: boolean;
+};
+
+export type RoomState = {
+  hostId: string;
+  revealed: boolean;
+  users: RoomUser[];
+  votes: Record<string, string> | null;
+};
+
+export type ServerMessage =
+  | { type: 'welcome'; userId: string }
+  | ({ type: 'state' } & RoomState)
+  | { type: 'error'; message: string };
 
 const alphabet = 'abcdefghijklmnopqrstuvwxyz0123456789';
 
