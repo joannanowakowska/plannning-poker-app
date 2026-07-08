@@ -5,3 +5,4 @@
 .backlog/local/*
 !.backlog/local/.gitkeep
 .backlog/_templates/.DS_Store
+.specstory/*
