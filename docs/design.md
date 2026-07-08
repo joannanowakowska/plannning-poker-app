@@ -164,7 +164,7 @@ The centrepiece component. Each card represents one LOTR character vote option.
 | Aragorn | `Aragorn` | `assets/characters/aragorn.jpg` |
 | Legolas | `Legolas` | `assets/characters/legolas.jpg` |
 | Gandalf | `Gandalf` | `assets/characters/gandalf.jpg` |
-| Sauron | `Sauron` | `assets/characters/sauron.jpg` |
+| Sauron | `Sauron` | `assets/characters/sauron.webp` |
 
 > **Licensing:** Film stills are from the Peter Jackson Lord of the Rings trilogy. Usage rights must be confirmed before any public release. During development, use placeholder silhouettes at the same dimensions. See epic AIA-56.
 
