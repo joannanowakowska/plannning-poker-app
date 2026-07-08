@@ -20,6 +20,8 @@ Vite keeps the MVP lightweight and simple to run locally.
 
 NodeJS is a good fit for the frontend because it is widely used, has a large ecosystem, and is easy to run locally.
 
+We also want to use SCSS for styling, which is supported by Vite rather than a library like tailwind.
+
 Consequences:
 - The app can be developed locally with a fast dev server.
 - The app can later be deployed as static assets.
