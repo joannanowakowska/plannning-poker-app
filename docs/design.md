@@ -159,12 +159,12 @@ The centrepiece component. Each card represents one LOTR character vote option.
 
 | Character | Vote value | Image |
 |---|---|---|
-| Pippin | `Pippin` | `assets/characters/pippin.jpg` |
-| Gimli | `Gimli` | `assets/characters/gimli.jpg` |
-| Aragorn | `Aragorn` | `assets/characters/aragorn.jpg` |
-| Legolas | `Legolas` | `assets/characters/legolas.jpg` |
-| Gandalf | `Gandalf` | `assets/characters/gandalf.jpg` |
-| Sauron | `Sauron` | `assets/characters/sauron.webp` |
+| Pippin | `Pippin` | `assets/characters/pippin.png` |
+| Gimli | `Gimli` | `assets/characters/gimli.png` |
+| Aragorn | `Aragorn` | `assets/characters/aragorn.png` |
+| Legolas | `Legolas` | `assets/characters/legolas.png` |
+| Gandalf | `Gandalf` | `assets/characters/gandalf.png` |
+| Sauron | `Sauron` | `assets/characters/sauron.png` |
 
 > **Licensing:** Film stills are from the Peter Jackson Lord of the Rings trilogy. Usage rights must be confirmed before any public release. During development, use placeholder silhouettes at the same dimensions. See epic AIA-56.
 

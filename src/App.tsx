@@ -1,5 +1,11 @@
-import { type FormEvent, useEffect, useState } from 'react';
+import { type FormEvent, useEffect, useRef, useState } from 'react';
 import { createRoomSocket, DISPLAY_NAME_MAX_LENGTH, ensureRoomInUrl, type RoomState, type ServerMessage } from './room.ts';
+import aragornImage from '../assets/characters/aragorn.png';
+import gandalfImage from '../assets/characters/gandalf.png';
+import gimliImage from '../assets/characters/gimli.png';
+import legolasImage from '../assets/characters/legolas.png';
+import pippinImage from '../assets/characters/pippin.png';
+import sauronImage from '../assets/characters/sauron.png';
 
 type ConnectionStatus = 'connecting' | 'connected' | 'disconnected' | 'failed';
 
@@ -10,6 +16,15 @@ const statusLabels: Record<ConnectionStatus, string> = {
   failed: 'Connection failed',
 };
 
+const characterCards = [
+  { name: 'Pippin', size: 'X-Small', image: pippinImage },
+  { name: 'Gimli', size: 'Small', image: gimliImage },
+  { name: 'Aragorn', size: 'Medium', image: aragornImage },
+  { name: 'Legolas', size: 'Large', image: legolasImage },
+  { name: 'Gandalf', size: 'X-Large', image: gandalfImage },
+  { name: 'Sauron', size: 'Gargantuan', image: sauronImage },
+] as const;
+
 export function App() {
   const [roomId] = useState(() => ensureRoomInUrl(window.location, window.history));
   const [displayName, setDisplayName] = useState('');
@@ -18,7 +33,9 @@ export function App() {
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>('disconnected');
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [roomState, setRoomState] = useState<RoomState | null>(null);
+  const [selectedCharacter, setSelectedCharacter] = useState<string | null>(null);
   const [serverError, setServerError] = useState('');
+  const socketRef = useRef<WebSocket | null>(null);
   const shareableLink = window.location.href;
 
   useEffect(() => {
@@ -28,6 +45,7 @@ export function App() {
 
     let isActive = true;
     const socket = createRoomSocket(roomId, joinedDisplayName);
+    socketRef.current = socket;
 
     const updateStatus = (status: ConnectionStatus) => {
       if (isActive) {
@@ -66,6 +84,9 @@ export function App() {
 
     return () => {
       isActive = false;
+      if (socketRef.current === socket) {
+        socketRef.current = null;
+      }
       socket.close();
     };
   }, [roomId, joinedDisplayName]);
@@ -83,8 +104,18 @@ export function App() {
     setDisplayNameError('');
     setCurrentUserId(null);
     setRoomState(null);
+    setSelectedCharacter(null);
     setServerError('');
     setJoinedDisplayName(trimmedDisplayName);
+  };
+
+  const handleVote = (characterName: string) => {
+    if (roomState?.revealed || connectionStatus !== 'connected') {
+      return;
+    }
+
+    setSelectedCharacter(characterName);
+    socketRef.current?.send(JSON.stringify({ type: 'vote', value: characterName }));
   };
 
   if (!joinedDisplayName) {
@@ -152,20 +183,52 @@ export function App() {
           <h2 id="participants-heading">Participants</h2>
           {roomState ? (
             <ul>
-              {roomState.users.map((user) => (
-                <li key={user.id}>
-                  <span>{user.name}</span>
-                  <small>
-                    {user.id === currentUserId ? 'You' : null}
-                    {user.id === currentUserId && user.id === roomState.hostId ? ' · ' : null}
-                    {user.id === roomState.hostId ? 'Host' : null}
-                  </small>
-                </li>
-              ))}
+              {roomState.users.map((user) => {
+                const participantLabels = [
+                  user.id === currentUserId ? 'You' : null,
+                  user.id === roomState.hostId ? 'Host' : null,
+                  user.hasVoted ? 'Voted' : null,
+                ].filter(Boolean);
+
+                return (
+                  <li key={user.id}>
+                    <span>{user.name}</span>
+                    <small>{participantLabels.join(' · ')}</small>
+                  </li>
+                );
+              })}
             </ul>
           ) : (
             <p className="empty-state">Waiting for the room roster.</p>
           )}
+        </section>
+
+        <section className="voting-deck" aria-labelledby="voting-heading">
+          <div className="section-heading-row">
+            <h2 id="voting-heading">Cast your vote</h2>
+            {roomState?.revealed ? <p>Voting closed</p> : null}
+          </div>
+          <div className="character-grid">
+            {characterCards.map((card) => {
+              const isSelected = selectedCharacter === card.name;
+              const isDisabled = roomState?.revealed || connectionStatus !== 'connected';
+
+              return (
+                <button
+                  aria-pressed={isSelected}
+                  className="character-card"
+                  disabled={isDisabled}
+                  key={card.name}
+                  onClick={() => handleVote(card.name)}
+                  type="button"
+                >
+                  <img alt={`${card.name} character portrait`} src={card.image} />
+                  <span>{card.name}</span>
+                  <small>{card.size}</small>
+                </button>
+              );
+            })}
+          </div>
         </section>
 
         <label className="invite-label" htmlFor="invite-link">

@@ -9,6 +9,7 @@ class MockWebSocket extends EventTarget {
 
   url: string;
   close = vi.fn();
+  send = vi.fn();
 
   constructor(url: string) {
     super();
@@ -49,7 +50,7 @@ describe('App', () => {
 
     const activeSocket = MockWebSocket.instances.at(-1);
 
-    expect(screen.getByText('Aragorn')).toBeInTheDocument();
+    expect(screen.getByText('You')).toBeInTheDocument();
     expect(screen.getByLabelText('Shareable room link')).toHaveValue(window.location.href);
     expect(activeSocket?.url).toBe(
       `wss://planning-poker-backend-ymq7.onrender.com/ws?room=${roomId}&name=Aragorn`,
@@ -110,7 +111,9 @@ describe('App', () => {
       );
     });
 
-    expect(screen.getByText('Legolas')).toBeInTheDocument();
+    const participants = within(screen.getByRole('region', { name: 'Participants' }));
+
+    expect(participants.getByText('Legolas')).toBeInTheDocument();
     expect(screen.getByText('You · Host')).toBeInTheDocument();
 
     act(() => {
@@ -127,10 +130,149 @@ describe('App', () => {
       );
     });
 
-    const participants = within(screen.getByRole('region', { name: 'Participants' }));
-
     expect(participants.queryByText('Gimli')).not.toBeInTheDocument();
     expect(participants.getByText('Host')).toBeInTheDocument();
+  });
+
+  it('renders the character deck and sends votes for selected cards before reveal', async () => {
+    render(
+      <StrictMode>
+        <App />
+      </StrictMode>,
+    );
+
+    fireEvent.change(screen.getByLabelText('Display name'), { target: { value: 'Merry' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Join room' }));
+
+    await waitFor(() => expect(MockWebSocket.instances.length).toBeGreaterThan(0));
+
+    const activeSocket = MockWebSocket.instances.at(-1)!;
+
+    act(() => {
+      activeSocket.dispatchEvent(new Event('open'));
+      activeSocket.dispatchEvent(new MessageEvent('message', { data: JSON.stringify({ type: 'welcome', userId: 'user-1' }) }));
+      activeSocket.dispatchEvent(
+        new MessageEvent('message', {
+          data: JSON.stringify({
+            type: 'state',
+            hostId: 'user-1',
+            revealed: false,
+            users: [{ id: 'user-1', name: 'Merry', hasVoted: false }],
+            votes: null,
+          }),
+        }),
+      );
+    });
+
+    await waitFor(() => expect(screen.getByText('Room opened')).toBeInTheDocument());
+
+    const expectedCards = [
+      ['Pippin', 'X-Small'],
+      ['Gimli', 'Small'],
+      ['Aragorn', 'Medium'],
+      ['Legolas', 'Large'],
+      ['Gandalf', 'X-Large'],
+      ['Sauron', 'Gargantuan'],
+    ];
+
+    for (const [name, size] of expectedCards) {
+      const card = screen.getByRole('button', { name: new RegExp(`${name}.*${size}`) });
+
+      expect(card).toBeEnabled();
+      expect(within(card).getByRole('img', { name: `${name} character portrait` })).toBeInTheDocument();
+    }
+
+    fireEvent.click(screen.getByRole('button', { name: /Aragorn.*Medium/ }));
+
+    expect(activeSocket.send).toHaveBeenLastCalledWith(JSON.stringify({ type: 'vote', value: 'Aragorn' }));
+    expect(screen.getByRole('button', { name: /Aragorn.*Medium/ })).toHaveAttribute('aria-pressed', 'true');
+
+    fireEvent.click(screen.getByRole('button', { name: /Gandalf.*X-Large/ }));
+
+    expect(activeSocket.send).toHaveBeenLastCalledWith(JSON.stringify({ type: 'vote', value: 'Gandalf' }));
+    expect(screen.getByRole('button', { name: /Aragorn.*Medium/ })).toHaveAttribute('aria-pressed', 'false');
+    expect(screen.getByRole('button', { name: /Gandalf.*X-Large/ })).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  it('shows participant voted indicators without exposing vote values', async () => {
+    render(
+      <StrictMode>
+        <App />
+      </StrictMode>,
+    );
+
+    fireEvent.change(screen.getByLabelText('Display name'), { target: { value: 'Frodo' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Join room' }));
+
+    await waitFor(() => expect(MockWebSocket.instances.length).toBeGreaterThan(0));
+
+    const activeSocket = MockWebSocket.instances.at(-1)!;
+
+    act(() => {
+      activeSocket.dispatchEvent(new MessageEvent('message', { data: JSON.stringify({ type: 'welcome', userId: 'user-1' }) }));
+      activeSocket.dispatchEvent(
+        new MessageEvent('message', {
+          data: JSON.stringify({
+            type: 'state',
+            hostId: 'user-1',
+            revealed: false,
+            users: [
+              { id: 'user-1', name: 'Frodo', hasVoted: true },
+              { id: 'user-2', name: 'Sam', hasVoted: true },
+            ],
+            votes: null,
+          }),
+        }),
+      );
+    });
+
+    const participants = within(screen.getByRole('region', { name: 'Participants' }));
+
+    expect(participants.getByText('You · Host · Voted')).toBeInTheDocument();
+    expect(participants.getByText('Voted')).toBeInTheDocument();
+    expect(screen.queryByText('Aragorn')).not.toBeNull();
+  });
+
+  it('disables voting after votes are revealed', async () => {
+    render(
+      <StrictMode>
+        <App />
+      </StrictMode>,
+    );
+
+    fireEvent.change(screen.getByLabelText('Display name'), { target: { value: 'Elrond' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Join room' }));
+
+    await waitFor(() => expect(MockWebSocket.instances.length).toBeGreaterThan(0));
+
+    const activeSocket = MockWebSocket.instances.at(-1)!;
+
+    act(() => {
+      activeSocket.dispatchEvent(new Event('open'));
+      activeSocket.dispatchEvent(new MessageEvent('message', { data: JSON.stringify({ type: 'welcome', userId: 'user-1' }) }));
+      activeSocket.dispatchEvent(
+        new MessageEvent('message', {
+          data: JSON.stringify({
+            type: 'state',
+            hostId: 'user-1',
+            revealed: true,
+            users: [{ id: 'user-1', name: 'Elrond', hasVoted: false }],
+            votes: { 'user-1': 'Pippin' },
+          }),
+        }),
+      );
+    });
+
+    await waitFor(() => expect(screen.getByText('Room opened')).toBeInTheDocument());
+
+    const pippinCard = screen.getByRole('button', { name: /Pippin.*X-Small/ });
+
+    expect(screen.getByText('Voting closed')).toBeInTheDocument();
+    expect(pippinCard).toBeDisabled();
+
+    fireEvent.click(pippinCard);
+
+    expect(activeSocket.send).not.toHaveBeenCalled();
   });
 
   it('updates the connection status from the active socket', async () => {
