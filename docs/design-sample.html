@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Fellowship Estimates — Design Sample</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* =============================================
+           DESIGN TOKENS
+        ============================================= */
+        :root {
+            /* Colour */
+            --color-parchment:      #FAF6ED;
+            --color-surface:        #EDE8DA;
+            --color-border:         #9B8B7A;
+            --color-text-primary:   #2C1810;
+            --color-text-secondary: #5C4A3A;
+            --color-gold:           #B8860B;
+            --color-gold-hover:     #9A6F09;
+            --color-gold-focus:     #C9A227;
+            --color-green:          #4A6741;
+            --color-red:            #8B1A1A;
+            --color-text-on-gold:   #1A0F00;
+
+            /* Spacing — ordered by stature */
+            --space-hobbit: 4px;   /* Tight gaps, icon spacing */
+            --space-dwarf:  8px;   /* Default internal padding */
+            --space-man:    16px;  /* Component gaps, field spacing */
+            --space-elf:    24px;  /* Section padding, card internals */
+            --space-ent:    32px;  /* Between major sections */
+            --space-wizard: 48px;  /* Page-level vertical rhythm */
+            --space-eagle:  64px;  /* Hero areas, top/bottom page padding */
+        }
+
+        /* =============================================
+           RESET
+        ============================================= */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--color-parchment);
+            color: var(--color-text-primary);
+            font-family: 'Source Sans 3', sans-serif;
+            font-size: 18px;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* =============================================
+           TYPOGRAPHY UTILITIES
+        ============================================= */
+        .type-display   { font-family: 'IM Fell English', serif; font-size: 40px; line-height: 1.2; }
+        .type-heading-l { font-family: 'IM Fell English', serif; font-size: 32px; line-height: 1.25; }
+        .type-heading-m { font-family: 'IM Fell English', serif; font-size: 24px; line-height: 1.3; }
+        .type-heading-s { font-family: 'IM Fell English', serif; font-size: 20px; line-height: 1.35; }
+        .type-body      { font-family: 'Source Sans 3', sans-serif; font-size: 18px; line-height: 1.6; }
+        .type-body-s    { font-family: 'Source Sans 3', sans-serif; font-size: 16px; line-height: 1.5; }
+        .type-label     { font-family: 'Source Sans 3', sans-serif; font-size: 16px; font-weight: 600; line-height: 1.4; }
+        .type-caption   { font-family: 'Source Sans 3', sans-serif; font-size: 14px; line-height: 1.4; }
+
+        /* =============================================
+           HEADER
+        ============================================= */
+        .site-header {
+            background: var(--color-surface);
+            border-bottom: 2px solid var(--color-border);
+            padding: var(--space-elf) var(--space-eagle);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: var(--space-man);
+        }
+
+        .site-header__title {
+            font-family: 'IM Fell English', serif;
+            font-size: 40px;
+            color: var(--color-text-primary);
+        }
+
+        .site-header__subtitle {
+            font-size: 16px;
+            color: var(--color-text-secondary);
+            margin-top: var(--space-hobbit);
+        }
+
+        .site-header__badge {
+            background: var(--color-gold);
+            color: var(--color-text-on-gold);
+            padding: var(--space-hobbit) var(--space-man);
+            border-radius: 4px;
+            font-family: 'Source Sans 3', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        /* =============================================
+           BANNER
+        ============================================= */
+        .banner {
+            padding: var(--space-man) var(--space-eagle);
+            border-left: 4px solid var(--color-gold);
+            background: var(--color-surface);
+        }
+
+        .banner--success {
+            border-left-color: var(--color-green);
+            background: #e9f5e5;
+        }
+
+        .banner--error {
+            border-left-color: var(--color-red);
+            background: #f5e8e8;
+        }
+
+        .banner__text {
+            font-size: 16px;
+            color: var(--color-text-primary);
+        }
+
+        /* =============================================
+           LAYOUT
+        ============================================= */
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--space-wizard) var(--space-eagle);
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: var(--space-ent);
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-ent);
+        }
+
+        /* =============================================
+           BUTTONS
+        ============================================= */
+        .btn {
+            font-family: 'Source Sans 3', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            padding: var(--space-dwarf) var(--space-elf);
+            border-radius: 4px;
+            cursor: pointer;
+            border: none;
+            line-height: 1.4;
+            transition: background 100ms ease, filter 100ms ease;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-dwarf);
+        }
+
+        .btn:focus-visible {
+            outline: 3px solid var(--color-gold-focus);
+            outline-offset: 2px;
+        }
+
+        .btn--primary {
+            background: var(--color-gold);
+            color: var(--color-text-on-gold);
+        }
+
+        .btn--primary:hover:not(:disabled) {
+            background: var(--color-gold-hover);
+        }
+
+        .btn--secondary {
+            background: transparent;
+            color: var(--color-text-primary);
+            border: 2px solid var(--color-border);
+        }
+
+        .btn--secondary:hover:not(:disabled) {
+            background: var(--color-surface);
+        }
+
+        .btn--destructive {
+            background: var(--color-red);
+            color: #ffffff;
+        }
+
+        .btn--destructive:hover:not(:disabled) {
+            filter: brightness(0.88);
+        }
+
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* =============================================
+           VOTE CARDS
+        ============================================= */
+        .vote-section__heading {
+            font-family: 'IM Fell English', serif;
+            font-size: 24px;
+            margin-bottom: var(--space-elf);
+            color: var(--color-text-primary);
+        }
+
+        .vote-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--space-elf);
+        }
+
+        .vote-card {
+            background: var(--color-surface);
+            border: 2px solid var(--color-border);
+            border-radius: 8px;
+            padding: var(--space-elf);
+            cursor: pointer;
+            text-align: center;
+            transition: transform 100ms ease, border-color 100ms ease, box-shadow 100ms ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-man);
+            font-family: inherit;
+        }
+
+        .vote-card:hover:not(:disabled) {
+            border-color: var(--color-gold);
+            transform: translateY(-2px);
+        }
+
+        .vote-card:focus-visible {
+            outline: 3px solid var(--color-gold-focus);
+            outline-offset: 2px;
+        }
+
+        .vote-card[aria-pressed="true"] {
+            border: 3px solid var(--color-gold);
+            box-shadow: 0 0 0 2px var(--color-gold-focus);
+            background: var(--color-parchment);
+        }
+
+        /* Character placeholder image */
+        .vote-card__placeholder {
+            width: 180px;
+            height: 240px;
+            background: #3D2B1F;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-dwarf);
+        }
+
+        .vote-card__placeholder-name {
+            font-family: 'IM Fell English', serif;
+            font-size: 18px;
+            color: #FAF6ED;
+            opacity: 0.85;
+        }
+
+        .vote-card__name {
+            font-family: 'IM Fell English', serif;
+            font-size: 20px;
+            color: var(--color-text-primary);
+        }
+
+        .vote-card__subtitle {
+            font-size: 14px;
+            color: var(--color-text-secondary);
+        }
+
+        .vote-card__size {
+            display: inline-block;
+            background: var(--color-gold);
+            color: var(--color-text-on-gold);
+            font-family: 'Source Sans 3', sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            padding: 3px var(--space-dwarf);
+            border-radius: 3px;
+        }
+
+        /* =============================================
+           HOST CONTROLS
+        ============================================= */
+        .host-controls {
+            display: flex;
+            gap: var(--space-man);
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .host-controls__label {
+            font-size: 14px;
+            color: var(--color-text-secondary);
+            margin-right: var(--space-hobbit);
+        }
+
+        /* =============================================
+           SIDEBAR / PANELS
+        ============================================= */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-ent);
+        }
+
+        .panel {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            padding: var(--space-elf);
+        }
+
+        .panel__title {
+            font-family: 'IM Fell English', serif;
+            font-size: 20px;
+            color: var(--color-text-primary);
+            margin-bottom: var(--space-man);
+            padding-bottom: var(--space-dwarf);
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        /* =============================================
+           PARTICIPANT LIST
+        ============================================= */
+        .participant-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .participant {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--space-dwarf) 0;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .participant:last-child {
+            border-bottom: none;
+        }
+
+        .participant__name {
+            font-size: 16px;
+            color: var(--color-text-primary);
+            display: flex;
+            align-items: center;
+            gap: var(--space-dwarf);
+        }
+
+        .participant__you {
+            font-size: 13px;
+            color: var(--color-text-secondary);
+        }
+
+        .participant__status {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            transition: background 200ms ease;
+        }
+
+        .participant__status--voted   { background: var(--color-green); }
+        .participant__status--waiting { border: 2px solid var(--color-border); background: transparent; }
+
+        /* =============================================
+           REVEALED SCORES
+        ============================================= */
+        .scores-panel {
+            display: none;
+            flex-direction: column;
+            gap: var(--space-hobbit);
+            margin-top: var(--space-man);
+        }
+
+        .scores-panel.is-visible {
+            display: flex;
+        }
+
+        .scores-panel__title {
+            font-family: 'IM Fell English', serif;
+            font-size: 18px;
+            color: var(--color-text-primary);
+            margin-bottom: var(--space-dwarf);
+        }
+
+        .score-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--space-hobbit) 0;
+            font-size: 16px;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .score-row:last-child { border-bottom: none; }
+
+        .score-row__character { font-family: 'IM Fell English', serif; font-size: 16px; }
+
+        .score-row__count {
+            background: var(--color-gold);
+            color: var(--color-text-on-gold);
+            padding: 2px var(--space-dwarf);
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* =============================================
+           INVITE / FORM INPUT
+        ============================================= */
+        .invite-description {
+            font-size: 14px;
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-man);
+        }
+
+        .invite-row {
+            display: flex;
+            gap: var(--space-dwarf);
+        }
+
+        .input {
+            width: 100%;
+            border: 2px solid var(--color-border);
+            border-radius: 4px;
+            padding: var(--space-dwarf) var(--space-man);
+            font-family: 'Source Sans 3', sans-serif;
+            font-size: 16px;
+            background: var(--color-parchment);
+            color: var(--color-text-primary);
+            line-height: 1.4;
+        }
+
+        .input:focus {
+            outline: 3px solid var(--color-gold-focus);
+            outline-offset: 2px;
+            border-color: var(--color-gold);
+        }
+
+        /* =============================================
+           TOAST NOTIFICATION
+        ============================================= */
+        .toast {
+            position: fixed;
+            bottom: var(--space-wizard);
+            left: 50%;
+            transform: translateX(-50%) translateY(120%);
+            background: var(--color-text-primary);
+            color: var(--color-parchment);
+            padding: var(--space-dwarf) var(--space-elf);
+            border-radius: 4px;
+            font-size: 15px;
+            transition: transform 250ms ease;
+            white-space: nowrap;
+            z-index: 100;
+        }
+
+        .toast.is-visible {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* =============================================
+           RESPONSIVE
+        ============================================= */
+        @media (max-width: 1024px) {
+            .site-header { padding: var(--space-elf) var(--space-ent); }
+            .banner { padding: var(--space-man) var(--space-ent); }
+            .main-container {
+                padding: var(--space-ent);
+                grid-template-columns: 1fr;
+            }
+            .sidebar { flex-direction: row; }
+            .panel { flex: 1; }
+            .vote-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 641px) {
+            .site-header {
+                padding: var(--space-man);
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .banner { padding: var(--space-man); }
+            .type-display { font-size: 28px; }
+            .main-container { padding: var(--space-man); }
+            .sidebar { flex-direction: column; }
+            .vote-card__placeholder { width: 120px; height: 160px; }
+            .vote-grid { grid-template-columns: repeat(2, 1fr); gap: var(--space-man); }
+            .vote-card { padding: var(--space-man); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ================================================
+         HEADER
+    ================================================ -->
+    <header class="site-header" role="banner">
+        <div>
+            <h1 class="site-header__title">The Fellowship Estimates</h1>
+            <p class="site-header__subtitle">Sprint 42 Planning — The Quest for Velocity</p>
+        </div>
+        <span class="site-header__badge" aria-label="You are the Ringbearer (host)">
+            &#9733; Ringbearer: Aragorn42
+        </span>
+    </header>
+
+    <!-- ================================================
+         STATUS BANNER
+    ================================================ -->
+    <div class="banner" id="status-banner" role="status" aria-live="polite">
+        <p class="banner__text" id="status-text">The council deliberates…</p>
+    </div>
+
+    <!-- ================================================
+         MAIN
+    ================================================ -->
+    <main class="main-container">
+
+        <div class="main-content">
+
+            <!-- Vote cards -->
+            <section aria-labelledby="vote-heading">
+                <h2 class="vote-section__heading" id="vote-heading">Pledge your stone</h2>
+
+                <div class="vote-grid" role="group" aria-label="Vote options">
+
+                    <button class="vote-card" aria-pressed="false" onclick="selectVote(this,'Pippin')" aria-label="Pippin, vote option, X-Small">
+                        <span class="vote-card__size">X-Small</span>
+                        <div class="vote-card__placeholder" aria-hidden="true">
+                            <svg width="56" height="56" viewBox="0 0 56 56" fill="none"><circle cx="28" cy="18" r="12" fill="#9B8B7A" opacity=".55"/><path d="M4 54c0-13.3 10.7-24 24-24s24 10.7 24 24" fill="#9B8B7A" opacity=".55"/></svg>
+                            <span class="vote-card__placeholder-name">Pippin</span>
+                        </div>
+                        <span class="vote-card__name">Pippin</span>
+                        <span class="vote-card__subtitle">Took of the Shire</span>
+                    </button>
+
+                    <button class="vote-card" aria-pressed="false" onclick="selectVote(this,'Gimli')" aria-label="Gimli, vote option, Small">
+                        <span class="vote-card__size">Small</span>
+                        <div class="vote-card__placeholder" aria-hidden="true">
+                            <svg width="56" height="56" viewBox="0 0 56 56" fill="none"><circle cx="28" cy="18" r="12" fill="#9B8B7A" opacity=".55"/><path d="M4 54c0-13.3 10.7-24 24-24s24 10.7 24 24" fill="#9B8B7A" opacity=".55"/></svg>
+                            <span class="vote-card__placeholder-name">Gimli</span>
+                        </div>
+                        <span class="vote-card__name">Gimli</span>
+                        <span class="vote-card__subtitle">Son of Glóin</span>
+                    </button>
+
+                    <button class="vote-card" aria-pressed="false" onclick="selectVote(this,'Aragorn')" aria-label="Aragorn, vote option, Medium">
+                        <span class="vote-card__size">Medium</span>
+                        <div class="vote-card__placeholder" aria-hidden="true">
+                            <svg width="56" height="56" viewBox="0 0 56 56" fill="none"><circle cx="28" cy="18" r="12" fill="#9B8B7A" opacity=".55"/><path d="M4 54c0-13.3 10.7-24 24-24s24 10.7 24 24" fill="#9B8B7A" opacity=".55"/></svg>
+                            <span class="vote-card__placeholder-name">Aragorn</span>
+                        </div>
+                        <span class="vote-card__name">Aragorn</span>
+                        <span class="vote-card__subtitle">Heir of Isildur</span>
+                    </button>
+
+                    <button class="vote-card" aria-pressed="false" onclick="selectVote(this,'Legolas')" aria-label="Legolas, vote option, Large">
+                        <span class="vote-card__size">Large</span>
+                        <div class="vote-card__placeholder" aria-hidden="true">
+                            <svg width="56" height="56" viewBox="0 0 56 56" fill="none"><circle cx="28" cy="18" r="12" fill="#9B8B7A" opacity=".55"/><path d="M4 54c0-13.3 10.7-24 24-24s24 10.7 24 24" fill="#9B8B7A" opacity=".55"/></svg>
+                            <span class="vote-card__placeholder-name">Legolas</span>
+                        </div>
+                        <span class="vote-card__name">Legolas</span>
+                        <span class="vote-card__subtitle">Prince of Mirkwood</span>
+                    </button>
+
+                    <button class="vote-card" aria-pressed="false" onclick="selectVote(this,'Gandalf')" aria-label="Gandalf, vote option, X-Large">
+                        <span class="vote-card__size">X-Large</span>
+                        <div class="vote-card__placeholder" aria-hidden="true">
+                            <svg width="56" height="56" viewBox="0 0 56 56" fill="none"><circle cx="28" cy="18" r="12" fill="#9B8B7A" opacity=".55"/><path d="M4 54c0-13.3 10.7-24 24-24s24 10.7 24 24" fill="#9B8B7A" opacity=".55"/></svg>
+                            <span class="vote-card__placeholder-name">Gandalf</span>
+                        </div>
+                        <span class="vote-card__name">Gandalf</span>
+                        <span class="vote-card__subtitle">The Grey</span>
+                    </button>
+
+                    <button class="vote-card" aria-pressed="false" onclick="selectVote(this,'Sauron')" aria-label="Sauron, vote option, Gargantuan">
+                        <span class="vote-card__size">Gargantuan</span>
+                        <div class="vote-card__placeholder" aria-hidden="true">
+                            <svg width="56" height="56" viewBox="0 0 56 56" fill="none"><circle cx="28" cy="18" r="12" fill="#9B8B7A" opacity=".55"/><path d="M4 54c0-13.3 10.7-24 24-24s24 10.7 24 24" fill="#9B8B7A" opacity=".55"/></svg>
+                            <span class="vote-card__placeholder-name">Sauron</span>
+                        </div>
+                        <span class="vote-card__name">Sauron</span>
+                        <span class="vote-card__subtitle">The Dark Lord</span>
+                    </button>
+
+                </div>
+            </section>
+
+            <!-- Host controls -->
+            <div class="host-controls" role="group" aria-label="Ringbearer controls">
+                <span class="host-controls__label type-caption">As Ringbearer:</span>
+                <button class="btn btn--primary" id="reveal-btn" onclick="revealVotes()">
+                    Let the stones be shown
+                </button>
+                <button class="btn btn--secondary" onclick="resetVotes()">
+                    A new quest begins
+                </button>
+            </div>
+
+        </div>
+
+        <!-- ================================================
+             SIDEBAR
+        ================================================ -->
+        <aside class="sidebar" aria-label="Room panels">
+
+            <!-- Participant list -->
+            <div class="panel">
+                <h2 class="panel__title">The Fellowship</h2>
+                <ul class="participant-list" id="participant-list" aria-label="Participants and their voting status">
+                    <li class="participant">
+                        <span class="participant__name">
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-label="Ringbearer" role="img"><path d="M7 1l1.5 3.5H13L9.5 7l1.5 4L7 9 3 11l1.5-4L1 7h4.5z" fill="#B8860B"/></svg>
+                            Aragorn42
+                            <span class="participant__you">(thee)</span>
+                        </span>
+                        <span class="participant__status participant__status--waiting" id="my-status" aria-label="Yet to pledge" title="Yet to pledge"></span>
+                    </li>
+                    <li class="participant">
+                        <span class="participant__name">Legolas99</span>
+                        <span class="participant__status participant__status--voted" aria-label="Stone pledged" title="Stone pledged"></span>
+                    </li>
+                    <li class="participant">
+                        <span class="participant__name">GandalfTheGrey</span>
+                        <span class="participant__status participant__status--waiting" aria-label="Yet to pledge" title="Yet to pledge"></span>
+                    </li>
+                    <li class="participant">
+                        <span class="participant__name">Gimli_Axe</span>
+                        <span class="participant__status participant__status--waiting" aria-label="Yet to pledge" title="Yet to pledge"></span>
+                    </li>
+                </ul>
+
+                <!-- Scores — hidden until revealed -->
+                <div class="scores-panel" id="scores-panel" aria-live="polite" aria-atomic="true">
+                    <h3 class="scores-panel__title">The council's wisdom</h3>
+                    <div class="score-row">
+                        <span class="score-row__character">Aragorn</span>
+                        <span class="score-row__count">2 votes</span>
+                    </div>
+                    <div class="score-row">
+                        <span class="score-row__character">Legolas</span>
+                        <span class="score-row__count">1 vote</span>
+                    </div>
+                    <div class="score-row">
+                        <span class="score-row__character">Gandalf</span>
+                        <span class="score-row__count">1 vote</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Invitation link -->
+            <div class="panel">
+                <h2 class="panel__title">The Invitation</h2>
+                <p class="invite-description">Share this link to summon others to the council.</p>
+                <div class="invite-row">
+                    <input
+                        class="input"
+                        type="text"
+                        id="invite-link"
+                        value="https://poker.example/room/shire-42"
+                        readonly
+                        aria-label="Room invitation link"
+                        style="font-size:13px;"
+                    >
+                    <button class="btn btn--secondary" onclick="copyLink()" aria-label="Copy invitation link" style="font-size:14px; padding: 8px 12px; white-space:nowrap;">
+                        Forge the Invitation
+                    </button>
+                </div>
+            </div>
+
+        </aside>
+    </main>
+
+    <!-- Toast notification -->
+    <div class="toast" id="toast" role="alert" aria-live="assertive"></div>
+
+    <!-- ================================================
+         JAVASCRIPT
+    ================================================ -->
+    <script>
+        let selectedVote = null;
+        let isRevealed = false;
+
+        /* ---------- Vote selection ---------- */
+        function selectVote(card, character) {
+            if (isRevealed) return;
+
+            document.querySelectorAll('.vote-card').forEach(c => c.setAttribute('aria-pressed', 'false'));
+            card.setAttribute('aria-pressed', 'true');
+            selectedVote = character;
+
+            const myStatus = document.getElementById('my-status');
+            myStatus.className = 'participant__status participant__status--voted';
+            myStatus.setAttribute('aria-label', 'Stone pledged');
+            myStatus.setAttribute('title', 'Stone pledged');
+
+            setBanner('default', `Thy stone is pledged — ${character}`);
+        }
+
+        /* ---------- Reveal votes ---------- */
+        function revealVotes() {
+            isRevealed = true;
+
+            document.querySelectorAll('.participant__status').forEach(s => {
+                s.className = 'participant__status participant__status--voted';
+                s.setAttribute('aria-label', 'Stone pledged');
+                s.setAttribute('title', 'Stone pledged');
+            });
+
+            document.getElementById('scores-panel').classList.add('is-visible');
+            document.getElementById('reveal-btn').disabled = true;
+            setBanner('success', 'The stones are revealed');
+        }
+
+        /* ---------- Reset ---------- */
+        function resetVotes() {
+            isRevealed = false;
+            selectedVote = null;
+
+            document.querySelectorAll('.vote-card').forEach(c => c.setAttribute('aria-pressed', 'false'));
+
+            document.querySelectorAll('.participant__status').forEach(s => {
+                s.className = 'participant__status participant__status--waiting';
+                s.setAttribute('aria-label', 'Yet to pledge');
+                s.setAttribute('title', 'Yet to pledge');
+            });
+
+            document.getElementById('scores-panel').classList.remove('is-visible');
+            document.getElementById('reveal-btn').disabled = false;
+            setBanner('default', 'The council deliberates…');
+        }
+
+        /* ---------- Copy invite link ---------- */
+        function copyLink() {
+            const value = document.getElementById('invite-link').value;
+            navigator.clipboard.writeText(value)
+                .then(() => showToast('The Invitation has been forged and copied.'))
+                .catch(() => {
+                    document.getElementById('invite-link').select();
+                    document.execCommand('copy');
+                    showToast('The Invitation has been forged and copied.');
+                });
+        }
+
+        /* ---------- Helpers ---------- */
+        function setBanner(variant, message) {
+            const banner = document.getElementById('status-banner');
+            banner.className = 'banner' + (variant === 'success' ? ' banner--success' : variant === 'error' ? ' banner--error' : '');
+            document.getElementById('status-text').textContent = message;
+        }
+
+        let toastTimer;
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('is-visible');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => toast.classList.remove('is-visible'), 3000);
+        }
+    </script>
+</body>
+</html>

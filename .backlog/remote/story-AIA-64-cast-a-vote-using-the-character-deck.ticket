@@ -2,7 +2,7 @@
 schemaVersion: 1.0
 issueType: Story
 templateName: story
-title: Cast a vote using the character deckB
+title: Cast a vote using the character deck
 draft: true
 lifecycleState: remote
 ticketKey: AIA-64
@@ -17,7 +17,7 @@ lastSynced: 2026-07-08T12:23:57.003Z
 *So that* I can indicate my estimate for the current story being discussed
 
 *Acceptance Criteria*
-- AC01: All 6 Lord of the Rings character cards are displayed — Pippin, Gimli, Aragorn, Legolas, Gandalf, and Sauron — each showing a photo of the character and their name
+- AC01: All 6 Lord of the Rings character cards are displayed — Pippin, Gimli, Aragorn, Legolas, Gandalf, and Sauron — each showing a photo of the character and their name and a tee-shirt size 
 - AC02: Clicking a character card casts a vote for that character
 - AC03: The currently selected card is visually highlighted to indicate the active vote
 - AC04: All cards remain selectable after a vote is cast, allowing the participant to change their vote before reveal
