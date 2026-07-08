@@ -36,9 +36,9 @@ The vote value sent to the backend is the character name.
 
 Voting buttons should have a photo of that character and their name for accessibility. This assumes appropriate rights or usage approval can be satisfied before public release.
 
-The room should be open to everyone. Anyone can connect with the URL and no authentication. The first client to connect is the host. The host has the ability to reveal scores and reset the voting. If the host disconnects, host status transfers to a random remaining participant.
+The room should be open to everyone. Anyone can connect with the URL and no authentication. The first client to connect is the host. The host has the ability to reveal scores and reset the voting. If the host disconnects, host status transfers to the oldest remaining participant.
 
-Scores are hidden from other users until everyone has voted OR the host decides to reveal scores. If everyone currently in the room has voted, scores are revealed automatically.
+Scores are hidden from other users until everyone has voted OR the host decides to reveal scores. If everyone currently in the room has voted, scores are revealed automatically. The host should have an easy way to reveal scores before everyone has voted.
 
 If a user disconnects and reconnects, they return as a new participant. Their previous vote is lost and they do not regain host status automatically.
 
@@ -56,9 +56,9 @@ MVP acceptance criteria:
 - Participants can cast one vote using the Lord of the Rings character deck.
 - Participants can see who has voted before scores are revealed.
 - Vote values are hidden until the host reveals scores or all current participants have voted.
-- The host can reveal scores before everyone has voted.
+- The host can easily reveal scores before everyone has voted.
 - Scores reveal automatically when all current participants have voted.
 - The host can reset the room for the next ticket.
-- If the host disconnects, a random remaining participant becomes host.
+- If the host disconnects, the oldest remaining participant becomes host.
 - If a participant disconnects, their vote is removed.
 - If a participant reconnects, they join as a new participant.
