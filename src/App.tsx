@@ -36,6 +36,7 @@ export function App() {
   const [selectedCharacter, setSelectedCharacter] = useState<string | null>(null);
   const [serverError, setServerError] = useState('');
   const socketRef = useRef<WebSocket | null>(null);
+  const autoRevealRequestedRef = useRef(false);
   const shareableLink = window.location.href;
 
   useEffect(() => {
@@ -91,6 +92,25 @@ export function App() {
     };
   }, [roomId, joinedDisplayName]);
 
+  useEffect(() => {
+    if (!roomState || roomState.revealed) {
+      autoRevealRequestedRef.current = false;
+      return;
+    }
+
+    const allCurrentParticipantsVoted = roomState.users.length > 0 && roomState.users.every((user) => user.hasVoted);
+
+    if (!allCurrentParticipantsVoted) {
+      autoRevealRequestedRef.current = false;
+      return;
+    }
+
+    if (!autoRevealRequestedRef.current) {
+      autoRevealRequestedRef.current = true;
+      socketRef.current?.send(JSON.stringify({ type: 'reveal' }));
+    }
+  }, [roomState]);
+
   const handleJoinRoom = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -105,6 +125,7 @@ export function App() {
     setCurrentUserId(null);
     setRoomState(null);
     setSelectedCharacter(null);
+    autoRevealRequestedRef.current = false;
     setServerError('');
     setJoinedDisplayName(trimmedDisplayName);
   };
@@ -116,6 +137,14 @@ export function App() {
 
     setSelectedCharacter(characterName);
     socketRef.current?.send(JSON.stringify({ type: 'vote', value: characterName }));
+  };
+
+  const handleRevealVotes = () => {
+    if (!roomState || roomState.revealed || currentUserId !== roomState.hostId || connectionStatus !== 'connected') {
+      return;
+    }
+
+    socketRef.current?.send(JSON.stringify({ type: 'reveal' }));
   };
 
   if (!joinedDisplayName) {
@@ -189,11 +218,15 @@ export function App() {
                   user.id === roomState.hostId ? 'Host' : null,
                   user.hasVoted ? 'Voted' : null,
                 ].filter(Boolean);
+                const revealedVote = roomState.revealed ? (roomState.votes?.[user.id] ?? 'No vote') : null;
 
                 return (
                   <li key={user.id}>
-                    <span>{user.name}</span>
-                    <small>{participantLabels.join(' · ')}</small>
+                    <span className="participant-summary">
+                      <span>{user.name}</span>
+                      <small>{participantLabels.join(' · ')}</small>
+                    </span>
+                    {revealedVote ? <strong className="vote-value">{revealedVote}</strong> : null}
                   </li>
                 );
               })}
@@ -207,6 +240,11 @@ export function App() {
           <div className="section-heading-row">
             <h2 id="voting-heading">Cast your vote</h2>
             {roomState?.revealed ? <p>Voting closed</p> : null}
+            {roomState && !roomState.revealed && currentUserId === roomState.hostId ? (
+              <button disabled={connectionStatus !== 'connected'} onClick={handleRevealVotes} type="button">
+                Reveal votes
+              </button>
+            ) : null}
           </div>
           <div className="character-grid">
             {characterCards.map((card) => {

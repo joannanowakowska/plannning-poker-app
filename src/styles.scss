@@ -189,6 +189,19 @@ dd {
   background: rgb(250 246 237 / 64%);
 }
 
+.participant-summary {
+  display: grid;
+  gap: var(--space-hobbit);
+}
+
+.vote-value {
+  flex: 0 0 auto;
+  padding: var(--space-hobbit) var(--space-dwarf);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  background: var(--color-parchment);
+}
+
 .participants small,
 .empty-state {
   color: var(--color-text-secondary);

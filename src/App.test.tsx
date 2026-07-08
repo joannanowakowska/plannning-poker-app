@@ -233,6 +233,157 @@ describe('App', () => {
     expect(screen.queryByText('Aragorn')).not.toBeNull();
   });
 
+  it('automatically requests reveal after all current participants have voted', async () => {
+    render(
+      <StrictMode>
+        <App />
+      </StrictMode>,
+    );
+
+    fireEvent.change(screen.getByLabelText('Display name'), { target: { value: 'Faramir' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Join room' }));
+
+    await waitFor(() => expect(MockWebSocket.instances.length).toBeGreaterThan(0));
+
+    const activeSocket = MockWebSocket.instances.at(-1)!;
+
+    act(() => {
+      activeSocket.dispatchEvent(new MessageEvent('message', { data: JSON.stringify({ type: 'welcome', userId: 'user-1' }) }));
+      activeSocket.dispatchEvent(
+        new MessageEvent('message', {
+          data: JSON.stringify({
+            type: 'state',
+            hostId: 'user-1',
+            revealed: false,
+            users: [
+              { id: 'user-1', name: 'Faramir', hasVoted: true },
+              { id: 'user-2', name: 'Eowyn', hasVoted: false },
+            ],
+            votes: null,
+          }),
+        }),
+      );
+    });
+
+    expect(activeSocket.send).not.toHaveBeenCalledWith(JSON.stringify({ type: 'reveal' }));
+
+    act(() => {
+      activeSocket.dispatchEvent(
+        new MessageEvent('message', {
+          data: JSON.stringify({
+            type: 'state',
+            hostId: 'user-1',
+            revealed: false,
+            users: [
+              { id: 'user-1', name: 'Faramir', hasVoted: true },
+              { id: 'user-2', name: 'Eowyn', hasVoted: true },
+            ],
+            votes: null,
+          }),
+        }),
+      );
+    });
+
+    expect(activeSocket.send).toHaveBeenLastCalledWith(JSON.stringify({ type: 'reveal' }));
+  });
+
+  it('shows a reveal button only to the host and sends reveal when clicked', async () => {
+    render(
+      <StrictMode>
+        <App />
+      </StrictMode>,
+    );
+
+    fireEvent.change(screen.getByLabelText('Display name'), { target: { value: 'Bilbo' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Join room' }));
+
+    await waitFor(() => expect(MockWebSocket.instances.length).toBeGreaterThan(0));
+
+    const activeSocket = MockWebSocket.instances.at(-1)!;
+
+    act(() => {
+      activeSocket.dispatchEvent(new Event('open'));
+      activeSocket.dispatchEvent(new MessageEvent('message', { data: JSON.stringify({ type: 'welcome', userId: 'user-1' }) }));
+      activeSocket.dispatchEvent(
+        new MessageEvent('message', {
+          data: JSON.stringify({
+            type: 'state',
+            hostId: 'user-2',
+            revealed: false,
+            users: [
+              { id: 'user-1', name: 'Bilbo', hasVoted: false },
+              { id: 'user-2', name: 'Thorin', hasVoted: false },
+            ],
+            votes: null,
+          }),
+        }),
+      );
+    });
+
+    expect(screen.queryByRole('button', { name: 'Reveal votes' })).not.toBeInTheDocument();
+
+    act(() => {
+      activeSocket.dispatchEvent(
+        new MessageEvent('message', {
+          data: JSON.stringify({
+            type: 'state',
+            hostId: 'user-1',
+            revealed: false,
+            users: [
+              { id: 'user-1', name: 'Bilbo', hasVoted: false },
+              { id: 'user-2', name: 'Thorin', hasVoted: false },
+            ],
+            votes: null,
+          }),
+        }),
+      );
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: 'Reveal votes' }));
+
+    expect(activeSocket.send).toHaveBeenLastCalledWith(JSON.stringify({ type: 'reveal' }));
+  });
+
+  it('shows revealed vote values beside participant names and leaves missing votes blank', async () => {
+    render(
+      <StrictMode>
+        <App />
+      </StrictMode>,
+    );
+
+    fireEvent.change(screen.getByLabelText('Display name'), { target: { value: 'Galadriel' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Join room' }));
+
+    await waitFor(() => expect(MockWebSocket.instances.length).toBeGreaterThan(0));
+
+    const activeSocket = MockWebSocket.instances.at(-1)!;
+
+    act(() => {
+      activeSocket.dispatchEvent(new MessageEvent('message', { data: JSON.stringify({ type: 'welcome', userId: 'user-1' }) }));
+      activeSocket.dispatchEvent(
+        new MessageEvent('message', {
+          data: JSON.stringify({
+            type: 'state',
+            hostId: 'user-1',
+            revealed: true,
+            users: [
+              { id: 'user-1', name: 'Galadriel', hasVoted: true },
+              { id: 'user-2', name: 'Celeborn', hasVoted: false },
+            ],
+            votes: { 'user-1': 'Legolas' },
+          }),
+        }),
+      );
+    });
+
+    const participants = within(screen.getByRole('region', { name: 'Participants' }));
+    const currentUser = participants.getByText('Galadriel').closest('li')!;
+    const missingVoteUser = participants.getByText('Celeborn').closest('li')!;
+
+    expect(within(currentUser).getByText('Legolas')).toBeInTheDocument();
+    expect(within(missingVoteUser).getByText('No vote')).toBeInTheDocument();
+  });
+
   it('disables voting after votes are revealed', async () => {
     render(
       <StrictMode>
