@@ -1,0 +1,41 @@
+---
+schemaVersion: 1.0
+issueType: Story
+templateName: story
+title: Join a room with a display name
+draft: true
+lifecycleState: remote
+ticketKey: AIA-63
+component: 
+labels: []
+bucket: 
+epicKey: AIA-56
+lastSynced: 2026-07-08T12:23:55.410Z
+---
+*As the* Planning Poker Development Team
+*I want* to join an existing room using a shared link and enter a display name
+*So that* I can participate in the planning session and be visible to other participants
+
+*Acceptance Criteria*
+- AC01: Visiting a room URL shows a display name entry prompt before the user enters the room
+- AC02: The display name field enforces a 1 to 32 character limit after trimming whitespace, with a clear message shown if the constraint is not met
+- AC03: Submitting a valid display name connects the user to the room and navigates them to the main room view
+- AC04: The user's display name is visible to other participants already in the room
+- AC05: If the room ID in the URL does not exist, the user becomes the host of a new room with that ID
+
+*Out of Scope*
+- Room ID generation and initial redirect (covered by AIA-62)
+- The voting interface and participant list details (separate stories)
+- Changing display name after joining the room
+
+*Technical Notes*
+- Open a WebSocket connection to the backend using the room ID from the URL query parameter and the entered display name
+- Store the `userId` from the backend's `welcome` message to identify the current user in subsequent `state` messages
+- Replace the full room state on every `state` message received — do not merge
+- Backend WebSocket endpoint: `wss://planning-poker-backend-ymq7.onrender.com/ws?room=<roomId>&name=<displayName>`
+
+*Testing Notes*
+- Verify the display name prompt is shown when visiting a `/?room=<id>` URL
+- Verify that submitting an empty name or a name exceeding 32 characters is rejected with a user-facing message
+- Verify that submitting a valid name navigates the user to the main room view
+- Verify the joined user appears in the participant list visible to others in the room

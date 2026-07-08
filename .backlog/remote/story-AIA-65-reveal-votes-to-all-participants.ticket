@@ -1,0 +1,42 @@
+---
+schemaVersion: 1.0
+issueType: Story
+templateName: story
+title: Reveal votes to all participants
+draft: true
+lifecycleState: remote
+ticketKey: AIA-65
+component: 
+labels: []
+bucket: 
+epicKey: AIA-56
+lastSynced: 2026-07-08T12:23:58.818Z
+---
+*As the* Planning Poker Development Team
+*I want* votes to be revealed automatically when all participants have voted, or by the host at any time
+*So that* the team can see everyone's estimates and discuss the results
+
+*Acceptance Criteria*
+- AC01: When all current participants have voted, votes are revealed automatically to everyone in the room
+- AC02: The host sees a reveal button that is not visible to other participants
+- AC03: Clicking the reveal button immediately reveals all votes, even if not everyone has voted
+- AC04: Once revealed, each participant's name is shown alongside their vote value
+- AC05: Participants who had not voted when reveal occurs show no vote value
+
+*Out of Scope*
+- Resetting the room for the next round (separate story)
+- Vote summaries, aggregations, or consensus indicators
+
+*Technical Notes*
+- Auto-reveal is handled by the frontend — when all entries in `state.users` have `hasVoted: true`, send a `reveal` message to the backend
+- Host manual reveal: send `{"type": "reveal"}` to the backend
+- On receiving `revealed: true` in a `state` message, display `state.votes` alongside each participant's name
+- Participants with no entry in `state.votes` did not vote — show a blank or absent value indicator
+- Render the reveal button only when the current user's stored `userId` matches `state.hostId`
+
+*Testing Notes*
+- Verify votes are revealed automatically once all participants in the room have voted
+- Verify the reveal button is not shown to non-host participants
+- Verify clicking the reveal button sends a `reveal` message and triggers vote display for all participants
+- Verify each participant's name is shown alongside their vote value after reveal
+- Verify participants who did not vote show no vote value after reveal

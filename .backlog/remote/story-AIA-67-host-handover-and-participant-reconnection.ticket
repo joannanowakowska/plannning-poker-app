@@ -1,0 +1,39 @@
+---
+schemaVersion: 1.0
+issueType: Story
+templateName: story
+title: Host handover and participant reconnection
+draft: true
+lifecycleState: remote
+ticketKey: AIA-67
+component: 
+labels: []
+bucket: 
+epicKey: AIA-56
+lastSynced: 2026-07-08T12:24:01.201Z
+---
+*As the* Planning Poker Development Team
+*I want* host status to transfer automatically when the host disconnects, and reconnecting participants to rejoin as new participants
+*So that* sessions can continue without interruption if someone loses their connection
+
+*Acceptance Criteria*
+- AC01: When the host disconnects, host status transfers automatically to the longest-connected remaining participant
+- AC02: The new host's reveal and reset controls appear without requiring a page refresh or any action
+- AC03: When any participant disconnects, they are removed from the participant list and their vote is discarded
+- AC04: If a disconnected participant rejoins via the room link, they are treated as a new participant — they must re-enter a display name, have no prior vote, and do not regain host status
+
+*Out of Scope*
+- Persisting room state after all participants have left
+- Reconnect or resume sessions that restore a previous identity or vote (not supported by the backend)
+
+*Technical Notes*
+- Host handover is handled entirely by the backend — on disconnect it promotes the participant with the lowest connection sequence number and broadcasts a new `state` message
+- The frontend derives host status by comparing the stored `userId` against `state.hostId` on every `state` message received
+- Reveal and reset controls must render conditionally based on whether `userId === state.hostId`
+- A participant disconnect triggers a `state` broadcast — the frontend replaces the full room state and the departed user is absent from `state.users`
+
+*Testing Notes*
+- Verify the reveal and reset controls appear for the new host immediately after the original host disconnects
+- Verify the disconnected participant is removed from the participant list
+- Verify the disconnected participant's vote is removed from the current round
+- Verify a participant who reconnects via the room link must re-enter their display name, has no prior vote, and does not hold host status

@@ -1,0 +1,45 @@
+---
+schemaVersion: 1.0
+issueType: Story
+templateName: story
+title: Cast a vote using the character deckB
+draft: true
+lifecycleState: remote
+ticketKey: AIA-64
+component: 
+labels: []
+bucket: 
+epicKey: AIA-56
+lastSynced: 2026-07-08T12:23:57.003Z
+---
+*As the* Planning Poker Development Team
+*I want* to cast a vote by selecting a Lord of the Rings character card
+*So that* I can indicate my estimate for the current story being discussed
+
+*Acceptance Criteria*
+- AC01: All 6 Lord of the Rings character cards are displayed — Pippin, Gimli, Aragorn, Legolas, Gandalf, and Sauron — each showing a photo of the character and their name
+- AC02: Clicking a character card casts a vote for that character
+- AC03: The currently selected card is visually highlighted to indicate the active vote
+- AC04: All cards remain selectable after a vote is cast, allowing the participant to change their vote before reveal
+- AC05: Selecting a different card before votes are revealed replaces the previous vote
+- AC06: Other participants can see that the user has voted, but cannot see the vote value
+- AC07: Voting is not possible after votes have been revealed
+
+*Out of Scope*
+- Revealing votes and displaying vote values (separate story)
+- Host controls for revealing votes (separate story)
+- Resetting the room for the next round (separate story)
+
+*Technical Notes*
+- Send a `vote` message to the backend with the character name as the string value, e.g. `{"type": "vote", "value": "Aragorn"}`
+- Re-sending a `vote` message before reveal overwrites the previous vote — the backend handles this automatically
+- Use the `hasVoted` field from `state` messages to show a voted indicator for each participant without exposing values
+- Hide or disable the voting cards when `revealed: true` is received in a `state` message
+
+*Testing Notes*
+- Verify all 6 character cards render with the correct image and name
+- Verify selecting a card sends the correct `vote` message to the backend with the character name as the value
+- Verify the selected card is visually distinguished from unselected cards
+- Verify selecting a different card before reveal updates the selection and sends a new `vote` message
+- Verify other participants show a voted indicator once a vote is cast
+- Verify character cards are not interactive after votes have been revealed

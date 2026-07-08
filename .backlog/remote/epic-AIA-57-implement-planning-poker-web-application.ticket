@@ -1,0 +1,49 @@
+---
+schemaVersion: 1
+templateName: epic
+issueType: epic
+title: Implement Planning Poker Web Application
+lifecycleState: remote
+draft: true
+ticketKey: AIA-57
+component:
+labels: []
+---
+
+*As the* Planning Poker Development Team
+*I want* a simple web application for running planning poker sessions
+*So that* the team can estimate Jira tickets collaboratively during planning without relying on manual or physical methods
+
+*Background*
+The team currently has no digital tool for planning poker and runs estimation sessions manually. This epic covers the delivery of an MVP web application that allows any number of participants to join a shared room, cast votes using a predefined card deck, and reveal results — all in real time. The application integrates with an existing backend and requires no authentication or external service setup. The goal is a lightweight, easy-to-use tool that removes friction from the estimation process.
+
+*Materials*
+Product requirements and MVP acceptance criteria: docs/product-requirements.md
+Backend API contract (WebSocket): docs/planning-poker-api-contract.md
+Architecture decisions: docs/architecture-decisions.md
+
+*Scope*
+- Room creation with a unique, shareable link
+- Joining a room using a display name, with no authentication required
+- Real-time participant list showing who is present and who has voted
+- Voting using the Lord of the Rings character card deck (Pippin, Gimli, Aragorn, Legolas, Gandalf, Sauron)
+- Votes remain hidden from other participants until revealed
+- Automatic vote reveal when all current participants have voted
+- Host ability to reveal votes early, before all participants have voted
+- Host ability to reset the room for the next voting round
+- Automatic host transfer to the longest-connected remaining participant if the host disconnects
+- Participant disconnect and reconnect handling — reconnecting participants rejoin as a new participant, with their previous vote removed
+
+*Out of Scope*
+- User authentication or accounts
+- Jira integration — tickets are discussed manually outside the app
+- Saved voting history or session records
+- Custom or configurable voting decks
+- Room data persistence after all participants have left
+- Spectator mode
+- In-app comments or discussion
+- Admin controls beyond host reveal and reset
+
+*Dependencies*
+- No external team dependencies; delivery is self-contained
+- Lord of the Rings character images will require usage rights approval before any public release

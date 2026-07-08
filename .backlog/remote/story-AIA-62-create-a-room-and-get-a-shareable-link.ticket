@@ -1,0 +1,40 @@
+---
+schemaVersion: 1.0
+issueType: Story
+templateName: story
+title: Create a room and get a shareable link
+draft: true
+lifecycleState: remote
+ticketKey: AIA-62
+component: 
+labels: []
+bucket: 
+epicKey: AIA-56
+lastSynced: 2026-07-08T12:23:42.361Z
+---
+*As the* Planning Poker Development Team
+*I want* to create a new planning poker room and receive a unique shareable link
+*So that* I can invite participants to join the session
+
+*Acceptance Criteria*
+- AC01: Visiting the app with no room parameter automatically generates a unique room ID and updates the browser URL to include it as a query parameter
+- AC02: The generated room ID conforms to the backend slug format (lowercase alphanumeric segments separated by dashes)
+- AC03: The URL displayed in the browser address bar after redirect is the shareable room link
+- AC04: Each fresh visit to the root URL generates a different room ID
+
+*Out of Scope*
+- Entering a display name or joining the room as a named participant (separate story)
+- Joining a room via a shared link (separate story)
+- A landing page or explicit "Create room" button
+
+*Technical Notes*
+- Generate a random slug client-side that conforms to the backend room ID regex (`^[a-z0-9]{4,32}(-[a-z0-9]{4,32})*$`)
+- Update the browser URL to `/?room=<id>` using client-side routing without a full page reload
+- Initiate a WebSocket connection to the backend with the generated room ID — the first connection to a room is assigned host status by the backend
+- Backend WebSocket endpoint: `wss://planning-poker-backend-ymq7.onrender.com/ws?room=<roomId>&name=<displayName>`
+
+*Testing Notes*
+- Verify that visiting the root URL with no `?room=` parameter redirects the browser to `/?room=<generated-id>`
+- Verify the generated room ID matches the expected slug format
+- Verify that two separate fresh visits to the root URL produce different room IDs
+- Verify a WebSocket connection is attempted to the backend with the generated room ID

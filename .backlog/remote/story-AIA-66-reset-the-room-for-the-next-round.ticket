@@ -1,0 +1,42 @@
+---
+schemaVersion: 1.0
+issueType: Story
+templateName: story
+title: Reset the room for the next round
+draft: true
+lifecycleState: remote
+ticketKey: AIA-66
+component: 
+labels: []
+bucket: 
+epicKey: AIA-56
+lastSynced: 2026-07-08T12:23:59.973Z
+---
+*As the* Planning Poker Development Team
+*I want* the host to reset the room after votes have been revealed
+*So that* the team can move on to estimating the next story without leaving and rejoining
+
+*Acceptance Criteria*
+- AC01: A reset button is visible to the host only after votes have been revealed
+- AC02: Clicking reset clears all votes and returns all participants to the unvoted state
+- AC03: After reset, the voting cards reappear with no selection for all participants
+- AC04: The participant list shows everyone as not having voted after reset
+- AC05: The reset button is not visible to non-host participants
+
+*Out of Scope*
+- Resetting before votes have been revealed
+- Removing participants from the room
+- Starting a new room or session
+
+*Technical Notes*
+- Send `{"type": "reset"}` to the backend when the host triggers a reset
+- The backend clears all votes, sets `revealed: false`, and broadcasts a new `state` message to all participants
+- Render the reset button only when `state.revealed === true` and the current user's `userId` matches `state.hostId`
+- On receiving the post-reset `state` message, clear any local vote selection held in the UI
+
+*Testing Notes*
+- Verify the reset button is not shown before votes have been revealed
+- Verify the reset button is not shown to non-host participants
+- Verify clicking reset sends a `reset` message to the backend
+- Verify all participants are returned to the unvoted state after reset
+- Verify voting cards reappear with no selection for all participants after reset
