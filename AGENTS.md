@@ -9,3 +9,6 @@ Use the following documents:
 - [backend contract](./docs/planning-poker-api-contract.md)
 
 Be concise. Prioritise brevity over grammar.
+
+# Use Backlog Assistant VS Code plugin tools
+- backlogAssistant_getLocalTicket 

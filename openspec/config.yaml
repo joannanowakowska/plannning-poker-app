@@ -1,0 +1,24 @@
+schema: delivery-lite
+
+# Injected into every artifact prompt.
+context: |
+  Tickets are synced to .backlog/remote/ as .ticket files by the backlog assistant plugin.
+  Use British English. Never add effort estimates to artefacts.
+
+# Injected only into the matching artifact's prompt.
+# rules:
+  # delivery-input:
+  #   - The .ticket file format is documented in
+  #     @docs/wiki/contributing/architecture/file-formats.md
+  # refinement:
+  #   - Affected areas must cite real paths in this repo, not guessed ones
+  # bdd:
+  #   - Verify commands must use this repo's npm scripts (npm test, npm run
+  #     lint, npm run typecheck) or plain shell checks; no tools that are not
+  #     already installed
+  #   - Test suites and how they run are documented in
+  #     @docs/wiki/contributing/quality/testing.md
+  # tasks:
+  #   - A task that changes code must name the affected area from
+  #     refinement.md it belongs to
+  #   - The PR task must follow @docs/wiki/contributing/conventions/pr-guidelines.md

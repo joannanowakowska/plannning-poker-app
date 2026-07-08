@@ -1,0 +1,100 @@
+name: delivery-lite
+version: 1
+description: "Minimal delivery workflow: import ticket, refine goal, define BDD acceptance, implement against tasks"
+artifacts:
+  - id: delivery-input
+    generates: delivery-input.md
+    description: Business-refined ticket context imported from Jira (generated, read-only)
+    template: delivery-input.md
+    instruction: |
+      GENERATED ARTEFACT - do not author by hand.
+      If sub-agents are available, delegate the fetch to the ticket-fetcher
+      sub-agent and map its returned ticket content into this file; otherwise read the source directly using skill get-ticket.
+      Source: the Backlog Assistant ticket file in .backlog/remote/
+      (<type>-<KEY>-<slug>.ticket: YAML frontmatter plus story body).
+      Map it into delivery-input.md: title from frontmatter; business goal
+      from the As/I want/So that story; scope and acceptance direction from
+      Acceptance Criteria and Out of Scope; constraints and dependencies
+      from Technical Notes, epicKey, and labels; source link as the
+      ticketKey and the .ticket file path; supporting materials from
+      Testing Notes and attachments.
+      Resync rule: if the .ticket file changes (plugin re-sync), regenerate
+      this file, then mark authored artefacts for impact review before the
+      next transition.
+      Never edit this file to record delivery-side decisions - those belong
+      in refinement.md.
+    requires: []
+  - id: refinement
+    generates: refinement.md
+    description: Goal identification, technical refinement, and confirmed affected areas
+    template: refinement.md
+    instruction: |
+      Authored artefact. Capture:
+      1. Goal - ONE sentence, stated as a measurable outcome. It must be
+         possible to answer "is this true yet?" with a command or an
+         observable fact, not an opinion.
+      2. Technical decisions - the smallest set of choices needed to start.
+      3. Affected areas - before completing refinement, search the codebase
+         for existing patterns the change must follow or modify. If
+         sub-agents are available, delegate this search to the explorer
+         sub-agent and use its result as the candidate list; otherwise
+         search directly. List each affected area with the file path, the
+         pattern found, and why it is in scope.
+      4. Out of scope - explicit exclusions.
+      Developer confirmation: present goal and affected areas to the
+      developer - if the grilling skill is available, run it to stress-test
+      them; otherwise review conversationally. Flip "CONFIRMED BY DEVELOPER"
+      to yes only after the developer approves. Do not proceed to bdd.md
+      while it reads no.
+      Reject vague goals ("improve", "better", "robust"). If the goal
+      cannot be verified mechanically, rewrite it until it can.
+    requires:
+      - delivery-input
+  - id: bdd
+    generates: bdd.md
+    description: BDD acceptance scenarios verifiable by a coding agent
+    template: bdd.md
+    instruction: |
+      Authored artefact. Gherkin scenarios covering the goal in
+      refinement.md. Rules:
+      - Do not author until refinement.md reads "CONFIRMED BY DEVELOPER: yes".
+      - Every Then step must be mechanically checkable: a command to run
+        and the exact expected output, exit code, file content, or API
+        response. Never "works correctly" or "is user friendly".
+      - Each scenario ends with a "Verify:" line giving the literal
+        command an agent runs to prove it (e.g. `npm test -- --grep X`,
+        `grep -q Y file`, curl + expected status).
+      - Cover the happy path plus each failure mode named in refinement.
+      These scenarios ARE the definition of done.
+      Developer approval: present the scenarios to the developer and flip
+      "APPROVED BY DEVELOPER" to yes only after they approve. Do not
+      proceed to tasks.md while it reads no.
+    requires:
+      - refinement
+  - id: tasks
+    generates: tasks.md
+    description: Ordered executable checklist
+    template: tasks.md
+    instruction: |
+      Authored artefact. Do not author until bdd.md reads
+      "APPROVED BY DEVELOPER: yes".
+      Ordered checklist in native OpenSpec format:
+      - [ ] X.Y Task description
+      Each task small enough for one session, ordered by dependency, and
+      touching only the affected areas confirmed in refinement.md.
+      The closing tasks are always: run every Verify command in bdd.md,
+      update docs if user-facing behaviour changed, create the PR.
+    requires:
+      - bdd
+apply:
+  requires:
+    - tasks
+  tracks: tasks.md
+  instruction: |
+    Before the first task, ensure you are on a work branch named
+    <type>/<ticket-id>/<slug> (create it from main if not); naming
+    convention: @docs/wiki/contributing/conventions/branch-naming.md.
+    Work through tasks in order, marking each complete as you go.
+    The change is done only when every Verify command in bdd.md passes.
+    If a scenario cannot pass as written, stop and flag it - do not
+    weaken the scenario. Pause on blockers needing clarification.
