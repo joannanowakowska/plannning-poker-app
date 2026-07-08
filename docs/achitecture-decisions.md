@@ -10,13 +10,15 @@ The product is an MVP. It has no authentication, no Jira integration, no saved v
 
 ## Decisions
 
-### 1. Use React And Vite For The Frontend
+### 1. Use React, NodeJS And Vite For The Frontend
 
-Decision: The frontend will be built with React and Vite.
+Decision: The frontend will be built with React, Node and Vite.
 
 React is a good fit for the live room UI because the app needs to react to WebSocket state changes, render participant/vote state, and update controls based on host status.
 
 Vite keeps the MVP lightweight and simple to run locally.
+
+NodeJS is a good fit for the frontend because it is widely used, has a large ecosystem, and is easy to run locally.
 
 Consequences:
 - The app can be developed locally with a fast dev server.
