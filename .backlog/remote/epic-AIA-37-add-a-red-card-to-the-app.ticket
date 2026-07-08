@@ -1,0 +1,34 @@
+---
+schemaVersion: 1
+templateName: epic
+issueType: epic
+title: Add a red card to the app
+lifecycleState: remote
+draft: false
+ticketKey: AIA-37
+component:
+labels: []
+---
+
+*As the* Planning Poker Developer
+*I want* to play a red card during a planning poker session
+*So that* I can signal to the team that I don't understand the story and need more information before estimating, prompting a discussion rather than a guess
+
+*Background*
+Planning poker relies on honest estimates from the whole team. When a developer does not have enough context to estimate a story, forcing them to pick a number produces unreliable results. A red card gives developers a formal, visible way to flag this situation. Because the red card is revealed immediately on the board — before the facilitator reveals all votes — it prompts the team to pause and clarify the story at the right moment.
+
+*Materials*
+No external materials.
+
+*Scope*
+- Add a red card to the card deck available to each participant in a session
+- Display the red card immediately on the board when a participant plays it, before the facilitator reveals all votes
+- Treat the red card as a purely visual signal; no automated action is triggered
+
+*Out of Scope*
+- Automatically pausing or resetting the voting round when a red card is played
+- Sending notifications or prompts to the facilitator when a red card is played
+- Any changes to the backend API to support the red card
+
+*Dependencies*
+No dependencies.
