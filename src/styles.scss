@@ -1,0 +1,146 @@
+:root {
+  --color-parchment: #faf6ed;
+  --color-surface: #ede8da;
+  --color-border: #9b8b7a;
+  --color-text-primary: #2c1810;
+  --color-text-secondary: #5c4a3a;
+  --color-gold: #b8860b;
+  --color-gold-focus: #c9a227;
+  --color-green: #4a6741;
+  --color-red: #8b1a1a;
+  --space-hobbit: 4px;
+  --space-dwarf: 8px;
+  --space-man: 16px;
+  --space-elf: 24px;
+  --space-ent: 32px;
+  --space-wizard: 48px;
+  --space-eagle: 64px;
+  color: var(--color-text-primary);
+  background: var(--color-parchment);
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 18px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+input:focus {
+  outline: 3px solid var(--color-gold-focus);
+  outline-offset: 2px;
+}
+
+.app-shell {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: var(--space-ent);
+  background:
+    linear-gradient(135deg, rgb(184 134 11 / 14%), transparent 34%),
+    radial-gradient(circle at 85% 18%, rgb(74 103 65 / 18%), transparent 28%),
+    var(--color-parchment);
+}
+
+.room-panel {
+  width: min(100%, 760px);
+  padding: var(--space-wizard);
+  border: 2px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+  box-shadow: 12px 12px 0 rgb(44 24 16 / 14%);
+}
+
+.eyebrow {
+  margin: 0 0 var(--space-dwarf);
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0;
+  max-width: 12ch;
+  font-family: 'IM Fell English', serif;
+  font-size: clamp(2.25rem, 8vw, 4rem);
+  font-weight: 400;
+  line-height: 1.05;
+}
+
+.intro {
+  max-width: 34rem;
+  margin: var(--space-man) 0 0;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+.room-details {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-man);
+  margin: var(--space-ent) 0;
+}
+
+.room-details div {
+  padding: var(--space-man);
+  border-left: 4px solid var(--color-gold);
+  background: rgb(250 246 237 / 64%);
+}
+
+dt {
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+dd {
+  margin: var(--space-hobbit) 0 0;
+  overflow-wrap: anywhere;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.invite-label {
+  display: block;
+  margin-bottom: var(--space-dwarf);
+  font-weight: 700;
+}
+
+#invite-link {
+  width: 100%;
+  min-height: 48px;
+  padding: var(--space-dwarf) var(--space-man);
+  border: 2px solid var(--color-border);
+  border-radius: 4px;
+  color: var(--color-text-primary);
+  background: var(--color-parchment);
+}
+
+@media (max-width: 640px) {
+  .app-shell {
+    align-items: start;
+    padding: var(--space-man);
+  }
+
+  .room-panel {
+    padding: var(--space-elf);
+    box-shadow: 6px 6px 0 rgb(44 24 16 / 14%);
+  }
+
+  .room-details {
+    grid-template-columns: 1fr;
+  }
+}

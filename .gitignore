@@ -1,5 +1,8 @@
 .DS_Store
 
+node_modules/
+dist/
+
 .backlog/breakdowns/*
 !.backlog/breakdowns/.gitkeep
 .backlog/local/*
