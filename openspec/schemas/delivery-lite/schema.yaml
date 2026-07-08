@@ -61,9 +61,6 @@ artifacts:
       - Every Then step must be mechanically checkable: a command to run
         and the exact expected output, exit code, file content, or API
         response. Never "works correctly" or "is user friendly".
-      - Each scenario ends with a "Verify:" line giving the literal
-        command an agent runs to prove it (e.g. `npm test -- --grep X`,
-        `grep -q Y file`, curl + expected status).
       - Cover the happy path plus each failure mode named in refinement.
       These scenarios ARE the definition of done.
       Developer approval: present the scenarios to the developer and flip
