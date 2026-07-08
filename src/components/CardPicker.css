@@ -1,0 +1,41 @@
+.card-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.card {
+  min-width: 3rem;
+  padding: 0.75rem 1rem;
+  font-size: 1.1rem;
+  border: 2px solid #ccc;
+  border-radius: 0.5rem;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.card:hover {
+  border-color: #555;
+}
+
+.card--red {
+  background: #e53e3e;
+  border-color: #c53030;
+  color: #fff;
+}
+
+.card--red:hover {
+  background: #c53030;
+  border-color: #9b2c2c;
+}
+
+.card--selected {
+  border-color: #3182ce;
+  background: #ebf8ff;
+}
+
+.card--red.card--selected {
+  border-color: #9b2c2c;
+  background: #9b2c2c;
+}
