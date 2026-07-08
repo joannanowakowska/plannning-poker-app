@@ -384,6 +384,113 @@ describe('App', () => {
     expect(within(missingVoteUser).getByText('No vote')).toBeInTheDocument();
   });
 
+  it('shows reset only to a host after reveal and clears voting state after reset', async () => {
+    render(
+      <StrictMode>
+        <App />
+      </StrictMode>,
+    );
+
+    fireEvent.change(screen.getByLabelText('Display name'), { target: { value: 'Eomer' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Join room' }));
+
+    await waitFor(() => expect(MockWebSocket.instances.length).toBeGreaterThan(0));
+
+    const activeSocket = MockWebSocket.instances.at(-1)!;
+
+    act(() => {
+      activeSocket.dispatchEvent(new Event('open'));
+      activeSocket.dispatchEvent(new MessageEvent('message', { data: JSON.stringify({ type: 'welcome', userId: 'user-1' }) }));
+      activeSocket.dispatchEvent(
+        new MessageEvent('message', {
+          data: JSON.stringify({
+            type: 'state',
+            hostId: 'user-1',
+            revealed: false,
+            users: [
+              { id: 'user-1', name: 'Eomer', hasVoted: false },
+              { id: 'user-2', name: 'Theoden', hasVoted: false },
+            ],
+            votes: null,
+          }),
+        }),
+      );
+    });
+
+    await waitFor(() => expect(screen.getByText('Room opened')).toBeInTheDocument());
+
+    expect(screen.queryByRole('button', { name: 'Reset room' })).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /Pippin.*X-Small/ }));
+
+    expect(screen.getByRole('button', { name: /Pippin.*X-Small/ })).toHaveAttribute('aria-pressed', 'true');
+
+    act(() => {
+      activeSocket.dispatchEvent(
+        new MessageEvent('message', {
+          data: JSON.stringify({
+            type: 'state',
+            hostId: 'user-1',
+            revealed: true,
+            users: [
+              { id: 'user-1', name: 'Eomer', hasVoted: true },
+              { id: 'user-2', name: 'Theoden', hasVoted: true },
+            ],
+            votes: { 'user-1': 'Pippin', 'user-2': 'Gimli' },
+          }),
+        }),
+      );
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: 'Reset room' }));
+
+    expect(activeSocket.send).toHaveBeenLastCalledWith(JSON.stringify({ type: 'reset' }));
+
+    act(() => {
+      activeSocket.dispatchEvent(
+        new MessageEvent('message', {
+          data: JSON.stringify({
+            type: 'state',
+            hostId: 'user-2',
+            revealed: true,
+            users: [
+              { id: 'user-1', name: 'Eomer', hasVoted: true },
+              { id: 'user-2', name: 'Theoden', hasVoted: true },
+            ],
+            votes: { 'user-1': 'Pippin', 'user-2': 'Gimli' },
+          }),
+        }),
+      );
+    });
+
+    expect(screen.queryByRole('button', { name: 'Reset room' })).not.toBeInTheDocument();
+
+    act(() => {
+      activeSocket.dispatchEvent(
+        new MessageEvent('message', {
+          data: JSON.stringify({
+            type: 'state',
+            hostId: 'user-1',
+            revealed: false,
+            users: [
+              { id: 'user-1', name: 'Eomer', hasVoted: false },
+              { id: 'user-2', name: 'Theoden', hasVoted: false },
+            ],
+            votes: null,
+          }),
+        }),
+      );
+    });
+
+    const participants = within(screen.getByRole('region', { name: 'Participants' }));
+
+    expect(screen.queryByText('Voting closed')).not.toBeInTheDocument();
+    expect(participants.getByText('You · Host')).toBeInTheDocument();
+    expect(participants.queryByText(/Voted/)).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Pippin.*X-Small/ })).toBeEnabled();
+    expect(screen.getByRole('button', { name: /Pippin.*X-Small/ })).toHaveAttribute('aria-pressed', 'false');
+  });
+
   it('disables voting after votes are revealed', async () => {
     render(
       <StrictMode>

@@ -111,6 +111,18 @@ export function App() {
     }
   }, [roomState]);
 
+  useEffect(() => {
+    if (!roomState || roomState.revealed || !currentUserId) {
+      return;
+    }
+
+    const currentUser = roomState.users.find((user) => user.id === currentUserId);
+
+    if (currentUser && !currentUser.hasVoted) {
+      setSelectedCharacter(null);
+    }
+  }, [currentUserId, roomState]);
+
   const handleJoinRoom = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -145,6 +157,14 @@ export function App() {
     }
 
     socketRef.current?.send(JSON.stringify({ type: 'reveal' }));
+  };
+
+  const handleResetRoom = () => {
+    if (!roomState || !roomState.revealed || currentUserId !== roomState.hostId || connectionStatus !== 'connected') {
+      return;
+    }
+
+    socketRef.current?.send(JSON.stringify({ type: 'reset' }));
   };
 
   if (!joinedDisplayName) {
@@ -243,6 +263,11 @@ export function App() {
             {roomState && !roomState.revealed && currentUserId === roomState.hostId ? (
               <button disabled={connectionStatus !== 'connected'} onClick={handleRevealVotes} type="button">
                 Reveal votes
+              </button>
+            ) : null}
+            {roomState?.revealed && currentUserId === roomState.hostId ? (
+              <button disabled={connectionStatus !== 'connected'} onClick={handleResetRoom} type="button">
+                Reset room
               </button>
             ) : null}
           </div>
